@@ -15,8 +15,8 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create Geometry
-     * @param gTypeValue
-     * @param srid
+     * @param gTypeValue gTypeValue
+     * @param srid srid
      */
     public EJGeometry(int gTypeValue, int srid) {
         super(gTypeValue, srid);
@@ -24,13 +24,13 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create Geometry
-     * @param gTypeValue
-     * @param srid
-     * @param x
-     * @param y
-     * @param z
-     * @param elemInfoArray
-     * @param ordinateArray
+     * @param gTypeValue gTypeValue
+     * @param srid srid
+     * @param x x
+     * @param y y
+     * @param z z
+     * @param elemInfoArray elemInfoArray
+     * @param ordinateArray ordinateArray
      */
     public EJGeometry(int gTypeValue, int srid, double x, double y, double z, int[] elemInfoArray, double[] ordinateArray) {
         super(gTypeValue, srid, x, y, z, elemInfoArray, ordinateArray);
@@ -38,10 +38,10 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create Geometry
-     * @param gTypeValue
-     * @param srid
-     * @param elemInfoArray
-     * @param ordinateArray
+     * @param gTypeValue gTypeValue
+     * @param srid srid
+     * @param elemInfoArray elemInfoArray
+     * @param ordinateArray ordinateArray
      */
     public EJGeometry(int gTypeValue, int srid, int[] elemInfoArray, double[] ordinateArray) {
         super(gTypeValue, srid, elemInfoArray, ordinateArray);
@@ -49,9 +49,9 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create 2D point
-     * @param x
-     * @param y
-     * @param srid
+     * @param x x
+     * @param y y
+     * @param srid srid
      */
     public EJGeometry(double x, double y, int srid) {
         super(x, y, srid);
@@ -59,10 +59,10 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create 3D point
-     * @param x
-     * @param y
-     * @param z
-     * @param srid
+     * @param x x
+     * @param y y
+     * @param z z
+     * @param srid srid
      */
     public EJGeometry(double x, double y, double z, int srid) {
         super(x, y, z, srid);
@@ -71,11 +71,11 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create 2D rectangle
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @param srid
+     * @param x1 x1
+     * @param y1 y1
+     * @param x2 x2
+     * @param y2 y2
+     * @param srid srid
      */
     public EJGeometry(double x1, double y1, double x2, double y2, int srid) {
         super(x1, y1, x2, y2, srid);
@@ -83,7 +83,7 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     /**
      * Create from JGeometry
-     * @param jGeometry
+     * @param jGeometry jGeometry
      * @return EJGeometry
      */
     public static EJGeometry from(JGeometry jGeometry) {
@@ -92,15 +92,62 @@ public class EJGeometry extends JGeometry implements GeometryLike {
         return new EJGeometry(gTypeValue, jGeometry.getSRID(), xyz[0], xyz[1], xyz[2], jGeometry.getElemInfo(), jGeometry.getOrdinatesArray());
     }
 
+    /**
+     * Create EJGeometry
+     * @param gType gType
+     * @param srid srid
+     * @param pointValueList pointValueList
+     * @param elemInfoList elemInfoList
+     * @param ordinateValueList ordinateValueList
+     * @return EJGeometry
+     */
     public static EJGeometry of(GType gType, Srid srid, List<Double> pointValueList, List<ElemInfoLike> elemInfoList, List<Double> ordinateValueList) {
         int[] elemInfoValues = elemInfoList.stream().flatMapToInt(elemInfo -> IntStream.of(elemInfo.rawElemInfo())).toArray();
         double[] ordinateValues = ordinateValueList.stream().mapToDouble(Double::doubleValue).toArray();
-        if (pointValueList.size() < 3) {
+        if (pointValueList.size() < 2) {
             return new EJGeometry(gType.gTypeValue(), srid.id, elemInfoValues, ordinateValues);
+        }
+        else if (pointValueList.size() < 3) {
+            return new EJGeometry(gType.gTypeValue(), srid.id, pointValueList.get(0), pointValueList.get(1), 0.0, elemInfoValues, ordinateValues);
         }
         else {
             return new EJGeometry(gType.gTypeValue(), srid.id, pointValueList.get(0), pointValueList.get(1), pointValueList.get(2), elemInfoValues, ordinateValues);
         }
+    }
+
+    /**
+     * Create EJGeometry
+     * @param gType gType
+     * @param srid srid
+     * @param elemInfoList elemInfoList
+     * @param ordinateValueList ordinateValueList
+     * @return EJGeometry
+     */
+    public static EJGeometry of(GType gType, Srid srid, List<ElemInfoLike> elemInfoList, List<Double> ordinateValueList) {
+        return EJGeometry.of(gType, srid, Collections.emptyList(), elemInfoList, ordinateValueList);
+    }
+
+    /**
+     * Create EJGeometry
+     * @param gType gType
+     * @param srid srid
+     * @param pointValueList pointValueList
+     * @return EJGeometry
+     */
+    public static EJGeometry of(GType gType, Srid srid, List<Double> pointValueList) {
+        return EJGeometry.of(gType, srid, pointValueList, Collections.emptyList(), Collections.emptyList());
+    }
+
+    /**
+     * Create EJGeometry
+     * @param gType gType
+     * @param srid srid
+     * @param elemInfo elemInfo
+     * @param ordinateValueList ordinateValueList
+     * @return EJGeometry
+     */
+    public static EJGeometry of(GType gType, Srid srid, ElemInfoLike elemInfo, List<Double> ordinateValueList) {
+        return EJGeometry.of(gType, srid, Collections.singletonList(elemInfo), ordinateValueList);
     }
 
     @Override
@@ -117,17 +164,25 @@ public class EJGeometry extends JGeometry implements GeometryLike {
     }
 
     @Override
-    public List<PointLike> pointList() {
-        if (elemInfo.length == 0 && ordinates.length == 0) {
-            return Collections.singletonList(new cc.domovoi.spatial.Point(this.x, this.y, this.z));
+    public Optional<PointLike> point() {
+        if (elemInfo == null || ordinates == null) {
+            if (this.getDimensions() == 2) {
+                return Optional.of(new cc.domovoi.spatial.LLPoint(this.x, this.y));
+            }
+            else {
+                return Optional.of(new cc.domovoi.spatial.Point(this.x, this.y, this.z));
+            }
         }
         else {
-            return Collections.emptyList();
+            return Optional.empty();
         }
     }
 
     @Override
     public List<ElemInfoLike> elemInfoList() {
+        if (this.elemInfo == null) {
+            return null;
+        }
         List<Optional<ElemInfo>> elemInfoListOptional = new ArrayList<>();
         int size = this.elemInfo.length / 3;
         for (int i = 0; i < size; i += 1) {
@@ -145,7 +200,17 @@ public class EJGeometry extends JGeometry implements GeometryLike {
     }
 
     @Override
-    public List<OrdinateLike> ordinateList() {
+    public boolean singleElement() {
+        return this.elemInfo != null && this.elemInfo.length == 3;
+    }
+
+    @Override
+    public List<OrdinateLike<? extends PointLike>> ordinateList() {
+        if (this.elemInfoList() == null) {
+            return this.getDimensions() == 2 ?
+                    Collections.singletonList(new LLOrdinate(OType.POINT_2D, Collections.singletonList(new LLPoint(this.x, this.y)))) :
+                    Collections.singletonList(new Ordinate(OType.POINT_3D, Collections.singletonList(new cc.domovoi.spatial.Point(this.x, this.y, this.z))));
+        }
         if (this.singleElement()) {
             ElemInfoLike elemInfo = this.elemInfoList().get(0);
             OType oType = OType.of(elemInfo.eType(), elemInfo.eType() != EType.POINT ? elemInfo.interpretation() : 0, this.getDimensions()).orElseThrow(() -> new RuntimeException("OType undefined"));
@@ -153,7 +218,7 @@ public class EJGeometry extends JGeometry implements GeometryLike {
             if (this.getDimensions() == 2) {
                 int size = this.ordinates.length / 2;
                 for (int i = 0; i < size; i += 1) {
-                    cc.domovoi.spatial.Point point = new cc.domovoi.spatial.Point(this.ordinates[i * 2], this.ordinates[i * 2 + 1], 0.0);
+                    cc.domovoi.spatial.Point point = new cc.domovoi.spatial.LLPoint(this.ordinates[i * 2], this.ordinates[i * 2 + 1]);
                     pointList.add(point);
                 }
             }
@@ -176,7 +241,14 @@ public class EJGeometry extends JGeometry implements GeometryLike {
 
     @Override
     public List<Double> pointValueList() {
-        return pointList().stream().flatMap(point -> Stream.of(point.xValue(), point.yValue(), point.zValue())).collect(Collectors.toList());
+        return point().map(p -> {
+            if (this.getDimensions() == 2) {
+                return Arrays.asList(p.xValue(), p.yValue());
+            }
+            else {
+                return Arrays.asList(p.xValue(), p.yValue(), p.zValue());
+            }
+        }).orElse(Collections.emptyList());
     }
 
     @Override

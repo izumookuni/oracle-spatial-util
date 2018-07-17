@@ -1,6 +1,14 @@
-plugins {
-    id 'java'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+    }
 }
+
+apply plugin: 'java'
+apply from: 'bintray.gradle'
 
 group 'cc.domovoi'
 version '0.0.1'

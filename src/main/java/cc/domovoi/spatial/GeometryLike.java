@@ -2,6 +2,7 @@ package cc.domovoi.spatial;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 public interface GeometryLike extends Cloneable, Serializable {
 
@@ -9,11 +10,11 @@ public interface GeometryLike extends Cloneable, Serializable {
 
     Srid srid();
 
-    List<PointLike> pointList();
+    Optional<PointLike> point();
 
     List<ElemInfoLike> elemInfoList();
 
-    List<OrdinateLike> ordinateList();
+    List<OrdinateLike<? extends PointLike>> ordinateList();
 
     default int gTypeValue() {
         return gType().gTypeValue();
