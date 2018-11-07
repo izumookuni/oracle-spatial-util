@@ -108,10 +108,10 @@ public class EJGeometry extends JGeometry implements GeometryLike {
             return new EJGeometry(gType.gTypeValue(), srid.id, elemInfoValues, ordinateValues);
         }
         else if (pointValueList.size() < 3) {
-            return new EJGeometry(gType.gTypeValue(), srid.id, pointValueList.get(0), pointValueList.get(1), 0.0, elemInfoValues, ordinateValues);
+            return new EJGeometry(pointValueList.get(0), pointValueList.get(1), srid.id);
         }
         else {
-            return new EJGeometry(gType.gTypeValue(), srid.id, pointValueList.get(0), pointValueList.get(1), pointValueList.get(2), elemInfoValues, ordinateValues);
+            return new EJGeometry(pointValueList.get(0), pointValueList.get(1), pointValueList.get(2), srid.id);
         }
     }
 
@@ -171,6 +171,14 @@ public class EJGeometry extends JGeometry implements GeometryLike {
             }
             else {
                 return Optional.of(new cc.domovoi.spatial.Point(this.x, this.y, this.z));
+            }
+        }
+        else if (elemInfo.length == 3 && elemInfo[0] == 1 && elemInfo[1] == 1 && elemInfo[2] == 1) {
+            if (this.getDimensions() == 2) {
+                return Optional.of(new cc.domovoi.spatial.LLPoint(ordinates[0], ordinates[1]));
+            }
+            else {
+                return Optional.of(new cc.domovoi.spatial.Point(ordinates[0], ordinates[1], ordinates[2]));
             }
         }
         else {
